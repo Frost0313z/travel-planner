@@ -2,7 +2,7 @@ RESULTS_DIR = "results"
 
 OPENAI_MODEL = "gpt-4o-mini"
 
-NAVER_LOCAL_SEARCH_URL = "https://openapi.naver.com/v1/search/local.json"
+NAVER_LOCAL_SEARCH_URL = "https://naverapihub.apigw.ntruss.com/search/v1/local"
 NAVER_RESTAURANT_DISPLAY_COUNT = 5
 
 RECOMMENDATION_SYSTEM_PROMPT = (
