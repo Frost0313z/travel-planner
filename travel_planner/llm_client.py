@@ -21,7 +21,8 @@ def recommend_destination(api_key, date):
     if parsed is not None:
         return parsed
 
-    # LLM JSON 파싱 실패 시 1회 재시도
+    # LLM JSON 파싱/스키마 검증 실패 시 1회 재시도
+    print("- 1차 추천 응답이 스키마와 맞지 않아 재시도합니다 (최대 1회)...")
     retry_text = _chat(client, RECOMMENDATION_RETRY_SYSTEM_PROMPT, raw_text)
     parsed = _parse_recommendation_json(retry_text)
     if parsed is not None:
@@ -65,7 +66,23 @@ def _parse_recommendation_json(text):
     if not all(key in data for key in REQUIRED_RECOMMENDATION_KEYS):
         return None
 
+    if not _has_expected_types(data):
+        return None
+
     return data
+
+
+def _has_expected_types(data):
+    if not isinstance(data.get("recommended_city"), str) or not data["recommended_city"]:
+        return False
+    if not isinstance(data.get("weather"), str):
+        return False
+    if not isinstance(data.get("reason"), str):
+        return False
+    events = data.get("events")
+    if not isinstance(events, list) or not all(isinstance(e, str) for e in events):
+        return False
+    return True
 
 
 def _strip_code_fence(text):
