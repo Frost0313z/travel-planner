@@ -1,6 +1,30 @@
 import requests
 
-from travel_planner.data import NAVER_LOCAL_SEARCH_URL, NAVER_RESTAURANT_DISPLAY_COUNT
+from travel_planner.data import (
+    CITY_ADMIN_SUFFIXES,
+    CITY_ALIASES,
+    NAVER_LOCAL_SEARCH_URL,
+    NAVER_RESTAURANT_DISPLAY_COUNT,
+)
+
+
+def normalize_city(city):
+    """LLM이 반환한 도시명 표기를 검색어로 쓰기 좋은 표준 표기로 정규화한다.
+
+    예: "제주도"/"제주특별자치도" -> "제주", "부산광역시" -> "부산".
+    별칭 표에 없으면 행정구역 접미사(시/도/광역시 등)를 떼어낸 결과를 쓰고,
+    그마저도 없으면 입력을 그대로 돌려준다(빈 문자열이 되는 경우는 원본 유지).
+    """
+    stripped = city.strip()
+    if stripped in CITY_ALIASES:
+        return CITY_ALIASES[stripped]
+
+    for suffix in CITY_ADMIN_SUFFIXES:
+        if stripped.endswith(suffix) and len(stripped) > len(suffix):
+            candidate = stripped[: -len(suffix)]
+            return CITY_ALIASES.get(candidate, candidate)
+
+    return stripped
 
 
 def search_restaurants(client_id, client_secret, city):
@@ -17,12 +41,16 @@ def search_restaurants(client_id, client_secret, city):
             "message": "NAVER_CLIENT_ID/NAVER_CLIENT_SECRET이 설정되지 않았습니다.",
         }
 
+    normalized_city = normalize_city(city)
+    if normalized_city != city:
+        print(f"- 도시명 정규화: \"{city}\" -> \"{normalized_city}\"")
+
     headers = {
         "X-NCP-APIGW-API-KEY-ID": client_id,
         "X-NCP-APIGW-API-KEY": client_secret,
     }
     params = {
-        "query": f"{city} 맛집",
+        "query": f"{normalized_city} 맛집",
         "display": NAVER_RESTAURANT_DISPLAY_COUNT,
     }
 
@@ -56,7 +84,7 @@ def search_restaurants(client_id, client_secret, city):
         return [], {
             "step": "place_search",
             "type": "EMPTY_RESULT",
-            "message": f"0 results for query={city} 맛집",
+            "message": f"0 results for query={normalized_city} 맛집",
         }
 
     return [_to_restaurant(item) for item in items], None
