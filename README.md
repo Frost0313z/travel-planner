@@ -156,6 +156,8 @@ msong7618@gmail.com
 `git log --oneline --graph --all`
 
 ```
+* 2f13f14 docs: 리드미를 배지/이모지/실행 예시 포함한 rich한 형태로 재작성
+* d709a70 docs: 결과물 확인 안내 및 개발환경 증빙을 최신 커밋 이력으로 갱신
 * 8b82669 fix: NAVER API HUB 지역 검색 엔드포인트를 실제 발급 키로 검증된 URL로 수정
 * 734184f docs: README 사용법, API 키 설정, 설계 노트, 개발환경 증빙 작성
 * 9f6807f fix: stderr UTF-8 재설정 및 리포트 제목/오류 요약 형식을 미션 예시에 맞춤
