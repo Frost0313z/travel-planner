@@ -2,12 +2,19 @@ from travel_planner.cli import parse_args
 from travel_planner.config import load_api_keys
 from travel_planner.llm_client import generate_report, recommend_destination
 from travel_planner.place_search import search_restaurants
-from travel_planner.storage import save_results
+from travel_planner.storage import load_cached_results, result_paths, save_results
 
 
 def run():
     args = parse_args()
     keys = load_api_keys()
+
+    if load_cached_results(args.date) is not None:
+        _, md_path = result_paths(args.date)
+        print(f"같은 날짜({args.date})의 캐시된 결과를 재사용합니다 (API 호출 없음).")
+        print(f"완료! {md_path} 를 확인하세요.")
+        return
+
     errors = []
 
     recommendation = _step_recommend(keys, args.date, errors)
