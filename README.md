@@ -60,7 +60,8 @@ python main.py --date "2026-03-15"
 - 콘솔에 `[1/3] → [2/3] → [3/3]` 진행 로그와 완료 메시지(결과 저장 경로)가 출력된다.
 - `results/{date}_travel_plan.json`: 1차 추천 JSON, 맛집 검색 결과(0건 가능), 오류 요약(`errors`, 비어있어도 배열로 존재)을 포함한 원본 데이터.
 - `results/{date}_travel_plan.md`: 추천 지역/이유, 날씨, 행사/축제, 맛집, 1일 일정, 오류 요약을 포함한 최종 리포트.
-- `results/2026-03-15_travel_plan.{json,md}`는 NAVER 키 미설정 상태로 실제 실행한 예시 결과물이다 (맛집 섹션이 "데이터 없음"으로 처리된 것도 요구사항에 명시된 정상 동작이다).
+- `results/2026-03-15_travel_plan.{json,md}`는 OpenAI + NAVER API HUB 지역 검색 API를 실제로 호출해 얻은 예시 결과물이다 (맛집 5곳 포함 정상 케이스).
+- 지도/장소 API 키가 없거나 인증에 실패해도 프로그램은 중단되지 않고 맛집 섹션을 "데이터 없음"으로 표기한 뒤 계속 진행한다 — 이 동작은 `git log`상 이전 커밋들에서 실제 실행 결과로도 확인할 수 있다.
 
 ## 프로젝트 구조
 
@@ -109,6 +110,8 @@ msong7618@gmail.com
 `git log --oneline --graph --all`
 
 ```
+* 8b82669 fix: NAVER API HUB 지역 검색 엔드포인트를 실제 발급 키로 검증된 URL로 수정
+* 734184f docs: README 사용법, API 키 설정, 설계 노트, 개발환경 증빙 작성
 * 9f6807f fix: stderr UTF-8 재설정 및 리포트 제목/오류 요약 형식을 미션 예시에 맞춤
 * 7da53d4 feat: 전체 파이프라인 오케스트레이션 (core.run) 구현
 * b9a0c8f feat: 결과 저장 (JSON/Markdown) 구현
