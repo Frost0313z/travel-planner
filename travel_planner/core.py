@@ -2,7 +2,12 @@ from travel_planner.cli import parse_args
 from travel_planner.config import load_api_keys
 from travel_planner.llm_client import generate_report, recommend_destination
 from travel_planner.place_search import search_restaurants
-from travel_planner.storage import load_cached_results, result_paths, save_results
+from travel_planner.storage import (
+    append_error_log,
+    load_cached_results,
+    result_paths,
+    save_results,
+)
 
 
 def run():
@@ -27,6 +32,7 @@ def run():
         "restaurants": restaurants,
         "errors": errors,
     }
+    append_error_log(args.date, errors)
     _, md_path = save_results(args.date, raw_data, report_markdown)
 
     print(f"\n완료! {md_path} 를 확인하세요.")
